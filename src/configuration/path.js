@@ -1,0 +1,1 @@
+export const backend_path = "https://ticketing-system6.herokuapp.com/"
