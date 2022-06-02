@@ -179,7 +179,7 @@ export default function TicketsAdmin() {
 
   return (
     <>
-      <Typography variant="h5">Liste des tickets</Typography>
+      <Typography variant="h5">Traitements des tickets</Typography>
       <DataTable rows={rows ? rows : []} columns={columns} />
       <DialogBox
         open={open}
