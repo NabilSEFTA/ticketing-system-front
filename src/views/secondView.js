@@ -7,6 +7,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import PanToolIcon from "@mui/icons-material/PanTool";
 import axios from "axios";
 import { backend_path } from "../configuration/path";
+import Typography from "@mui/material/Typography";
 export default function TicketsAdmin() {
   const columns = [
     { field: "idTicket", headerName: "ID ticket", width: 150 },
@@ -178,6 +179,7 @@ export default function TicketsAdmin() {
 
   return (
     <>
+      <Typography variant="h5">Liste des tickets</Typography>
       <DataTable rows={rows ? rows : []} columns={columns} />
       <DialogBox
         open={open}
