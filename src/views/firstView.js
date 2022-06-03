@@ -7,6 +7,8 @@ import DialogBox from "../components/sampleDialog";
 import FormTicket from "../components/formTicket";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "axios";
+import Snackbar from '@mui/material/Snackbar';
+import CloseIcon from '@mui/icons-material/Close';
 import { backend_path } from "../configuration/path";
 
 export default function Tickets() {
@@ -29,6 +31,20 @@ export default function Tickets() {
   });
   const [rows, setRows] = React.useState();
   const [rowsTable, setRowsTable] = React.useState();
+
+  const [openSnackBar, setOpenSnackBar] = React.useState(false);
+
+  const handleClickOpenSnackBar = () => {
+    setOpenSnackBar(true);
+  };
+
+  const handleCloseSnackBar = (reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnackBar(false);
+  };
 
   useEffect(() => {
     getTickets();
@@ -58,7 +74,9 @@ export default function Tickets() {
           setRowsTable(ticketsList);
           setNewRow(setUpNewRow());
         })
-        .catch((err) => err);
+        .catch((err) => {
+          handleClickOpenSnackBar()
+        });
     };
     axiosPostTicket();
   };
@@ -168,6 +186,18 @@ export default function Tickets() {
     };
     axiosGetFile();
   }
+  const actionSnackBar = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleCloseSnackBar}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
   return (
     <>
       <Grid container spacing={2}>
@@ -206,6 +236,13 @@ export default function Tickets() {
         </Grid>
       </Grid>
       <DataTable rows={rowsTable ? rowsTable : []} columns={columns} />
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackBar}
+        message="Vous n'avez pas rempli tous les champs"
+        action={actionSnackBar}
+      />
       <DialogBox
         open={open}
         handleClose={handleClose}

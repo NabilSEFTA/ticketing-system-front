@@ -2,9 +2,10 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Stack from "@mui/material/Stack";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Button, Grid, Link, TextField, Typography } from "@mui/material";
 import { DropzoneArea } from "material-ui-dropzone";
 import { useEffect } from "react";
+
 import { backend_path } from "../configuration/path";
 
 export default function FormTicket(props) {
@@ -16,11 +17,11 @@ export default function FormTicket(props) {
     handleDateChange,
     view,
     handleFileOnChange,
-    handleFileDownLoad
+    handleFileDownLoad,
   } = props;
-  useEffect(()=>{
-    console.log(handleFileDownLoad)
-  },[])
+  useEffect(() => {
+    console.log(handleFileDownLoad);
+  }, []);
   return (
     <>
       <TextField
@@ -34,6 +35,7 @@ export default function FormTicket(props) {
         onChange={(e) => {
           handleChange(e.target);
         }}
+        required
       />
       <TextField
         id="descriptionTicket"
@@ -46,6 +48,7 @@ export default function FormTicket(props) {
         onChange={(e) => {
           handleChange(e.target);
         }}
+        required
       />
       <Grid container style={{ marginTop: "3%" }}>
         <Grid item xs={6}>
@@ -62,12 +65,13 @@ export default function FormTicket(props) {
                 onChange={handleDateChange}
                 renderInput={(params) => <TextField {...params} />}
                 disabled={row ? true : false}
+                
               />
             </Stack>
           </LocalizationProvider>
         </Grid>
       </Grid>
-      {row && (
+      {row && row.assistante && (
         <TextField
           id="remarquesTicket"
           label="Remarques Assistante DZ"
@@ -84,17 +88,20 @@ export default function FormTicket(props) {
       {row && (
         <>
           <Grid container style={{ marginTop: "3%" }}>
-            <Grid item xs={6}>
+            <Grid item xs={3}>
               <Typography>Pièce Jointe : </Typography>
             </Grid>
-            <Grid item xs={6}>
-              <Button variant="text" ><a href={row.file}>{row.donneesTicket}</a></Button>
+            <Grid item xs={9}>
+              
+                <Link  href={row.file}>
+                  {row.donneesTicket}
+                </Link>
+              
             </Grid>
           </Grid>
-
         </>
       )}
-      {row && view && (
+      {row && row.assistante &&view && (
         <>
           <Grid container style={{ marginTop: "3%" }}>
             <Grid item xs={12}>
