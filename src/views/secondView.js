@@ -1,3 +1,4 @@
+/* imports */
 import { IconButton } from "@mui/material";
 import React, { useEffect } from "react";
 import DataTable from "../components/table";
@@ -8,6 +9,7 @@ import PanToolIcon from "@mui/icons-material/PanTool";
 import axios from "axios";
 import { backend_path } from "../configuration/path";
 import Typography from "@mui/material/Typography";
+
 export default function TicketsAdmin() {
   const columns = [
     { field: "idTicket", headerName: "ID ticket", width: 150 },
@@ -23,7 +25,7 @@ export default function TicketsAdmin() {
       headerName: "Visualiser",
       sortable: false,
       renderCell: (params) => {
-        const onClick = (e) => {
+        const onClick = () => {
           handleVisualizeAction(params.row);
         };
         console.log();
@@ -39,7 +41,7 @@ export default function TicketsAdmin() {
       headerName: "Choisir",
       sortable: false,
       renderCell: (params) => {
-        const onClick = (e) => {
+        const onClick = () => {
           handlePickTicket(params.row);
         };
         const visible = params.row.assistante;
@@ -66,14 +68,32 @@ export default function TicketsAdmin() {
 
   const [row, setRow] = React.useState();
   const [open, setOpen] = React.useState(false);
-  const [file, setFile] = React.useState();
   const [rows, setRows] = React.useState();
 
+  useEffect(() => {
+    getTickets();
+  }, []);
+  /* Backend exchange requets */
+  const getTickets = () => {
+    const axiosGetTickets = async () => {
+      axios
+        .get(backend_path + "ticketManagement/getTickets", {
+          params: { view: "assistance DZ 1" },
+        })
+        .then((response) => {
+          setRows(response.data);
+        })
+        .catch((err) => err);
+    };
+    axiosGetTickets();
+  };
+
+  /* handles row visualization in the dialog component */
   const handleVisualizeAction = (row) => {
     setOpen(true);
     setRow(row);
-    console.log(row);
   };
+  /* handles tickets additional information (notes and file upload) changing */
   const handleChange = (target) => {
     if (target.id) {
       setRow((prevState) => ({
@@ -99,30 +119,12 @@ export default function TicketsAdmin() {
       }
     }
   };
-
+  /* handles the dialog component close */
   const handleClose = () => {
     setOpen(false);
     console.log(row);
   };
-
-  useEffect(() => {
-    getTickets();
-  }, []);
-
-  const getTickets = () => {
-    const axiosGetTickets = async () => {
-      axios
-        .get(backend_path + "ticketManagement/getTickets", {
-          params: { view: "assistance DZ 1" },
-        })
-        .then((response) => {
-          setRows(response.data);
-        })
-        .catch((err) => err);
-    };
-    axiosGetTickets();
-  };
-
+  /* handles ticket choosing by DZ assistate */
   const handlePickTicket = (row) => {
     var pickedRow = rows.filter((elem) => elem.idTicket == row.idTicket)[0];
     pickedRow.assistante = "assistance DZ 1";
@@ -147,7 +149,7 @@ export default function TicketsAdmin() {
     };
     axiosUpdateTicket();
   };
-
+  /* handles ticket state changing  */
   const handleCloseTicket = () => {
     setOpen(false);
     var formData = new FormData();

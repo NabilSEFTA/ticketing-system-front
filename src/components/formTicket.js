@@ -2,11 +2,9 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import Stack from "@mui/material/Stack";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { Button, Grid, Link, TextField, Typography } from "@mui/material";
+import { Grid, Link, TextField, Typography } from "@mui/material";
 import { DropzoneArea } from "material-ui-dropzone";
-import { useEffect } from "react";
 
-import { backend_path } from "../configuration/path";
 
 export default function FormTicket(props) {
   const {
@@ -16,12 +14,8 @@ export default function FormTicket(props) {
     newRow,
     handleDateChange,
     view,
-    handleFileOnChange,
-    handleFileDownLoad,
+
   } = props;
-  useEffect(() => {
-    console.log(handleFileDownLoad);
-  }, []);
   return (
     <>
       <TextField

@@ -1,3 +1,4 @@
+/* imports */
 import { Grid, IconButton, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
@@ -7,15 +8,16 @@ import DialogBox from "../components/sampleDialog";
 import FormTicket from "../components/formTicket";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "axios";
-import Snackbar from '@mui/material/Snackbar';
-import CloseIcon from '@mui/icons-material/Close';
+import Snackbar from "@mui/material/Snackbar";
+import CloseIcon from "@mui/icons-material/Close";
 import { backend_path } from "../configuration/path";
 
 export default function Tickets() {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState(new Date("2014-08-18T21:11:54"));
-  const [action, setAction] = React.useState();
-  const [row, setRow] = React.useState();
+  /* states declarations */
+  const [open, setOpen] = React.useState(false); /* manages the dialog state */
+  const [value, setValue] = React.useState(new Date("2022-01-01")); /* manages Date component value */
+  const [action, setAction] = React.useState(); /* manages ticket details visualization */
+  const [row, setRow] = React.useState(); /* sets row to visualize in the dialog component */
   const [newRow, setNewRow] = useState({
     intituleTicket: null,
     descriptionTicket: null,
@@ -28,59 +30,10 @@ export default function Tickets() {
       idEtatTicket: 1,
       intituleEtatTicket: "Ouvert",
     },
-  });
-  const [rows, setRows] = React.useState();
-  const [rowsTable, setRowsTable] = React.useState();
-
-  const [openSnackBar, setOpenSnackBar] = React.useState(false);
-
-  const handleClickOpenSnackBar = () => {
-    setOpenSnackBar(true);
-  };
-
-  const handleCloseSnackBar = (reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpenSnackBar(false);
-  };
-
-  useEffect(() => {
-    getTickets();
-  }, []);
-
-  const getTickets = () => {
-    const axiosGetTickets = async () => {
-      axios
-        .get(backend_path+"ticketManagement/getTickets")
-        .then((response) => {
-          setRows(response.data);
-          setRowsTable(response.data);
-        })
-        .catch((err) => err);
-    };
-    axiosGetTickets();
-  };
-
-  const postTicket = () => {
-    const axiosPostTicket = async () => {
-      axios
-        .post(backend_path+"ticketManagement/createTicket", newRow)
-        .then((response) => {
-          let newTicket = response.data;
-          let ticketsList = [...rows, newTicket];
-          setRows(ticketsList);
-          setRowsTable(ticketsList);
-          setNewRow(setUpNewRow());
-        })
-        .catch((err) => {
-          handleClickOpenSnackBar()
-        });
-    };
-    axiosPostTicket();
-  };
-
+  }); /* handles new ticket creating */
+  const [rows, setRows] = React.useState(); /* contains rows gotten from server side */
+  const [rowsTable, setRowsTable] = React.useState(); /* manages tickets state filter */
+  const [openSnackBar, setOpenSnackBar] = React.useState(false); /* manages the SnackBar state */
   const columns = [
     { field: "idTicket", headerName: "ID ticket", width: 150 },
     { field: "intituleTicket", headerName: "Intitulé ticket", width: 150 },
@@ -115,6 +68,45 @@ export default function Tickets() {
     },
   ];
 
+  useEffect(() => {
+    getTickets();
+  }, []);
+
+  /* Backend exchange requets */
+
+  const getTickets = () => {
+    const axiosGetTickets = async () => {
+      axios
+        .get(backend_path + "ticketManagement/getTickets")
+        .then((response) => {
+          setRows(response.data);
+          setRowsTable(response.data);
+        })
+        .catch((err) => err);
+    };
+    axiosGetTickets();
+  };
+
+  const postTicket = () => {
+    const axiosPostTicket = async () => {
+      axios
+        .post(backend_path + "ticketManagement/createTicket", newRow)
+        .then((response) => {
+          let newTicket = response.data;
+          let ticketsList = [...rows, newTicket];
+          setRows(ticketsList);
+          setRowsTable(ticketsList);
+          setNewRow(setUpNewRow());
+        })
+        .catch((err) => {
+          handleClickOpenSnackBar();
+        });
+    };
+    axiosPostTicket();
+  };
+
+  /* functions to handle states changes */
+  /* Initialize new ticket */
   const setUpNewRow = () => {
     return {
       intituleTicket: null,
@@ -129,14 +121,15 @@ export default function Tickets() {
       },
     };
   };
-  
-  
+
+  /* handle change on new ticket form inputs */
   const handleChange = (target) => {
     setNewRow((prevState) => ({
       ...prevState,
       [target.id]: target.value,
     }));
   };
+  /* handle date changings of DateField */
   const handleDateChange = (newValue) => {
     setValue(newValue);
     setNewRow((prevState) => ({
@@ -144,20 +137,21 @@ export default function Tickets() {
       dateLimitTicket: newValue,
     }));
   };
+  /* Opens the dialog component */
   const handleClickOpen = () => {
     setOpen(true);
   };
-
+  /* Closes the dialog component  */
   const handleClose = () => {
     setOpen(false);
   };
-
+  /* Opens the dialog component to visualize a ticket */
   const handleAction = (row) => {
     setAction("visualize");
     handleClickOpen();
     setRow(row);
   };
-
+  /* handles the tickets state buttons, every button id relates to a diffrenet state  */
   const handleTicketState = (e) => {
     let tickets = null;
     if (e.target.id != 4) {
@@ -171,21 +165,25 @@ export default function Tickets() {
       console.log(rows);
     }
   };
+  /* handles submitting a new ticket */
   const handleSubmit = () => {
     postTicket();
     setOpen(false);
   };
-  const handleFileDownLoad = (path) => {
-    const axiosGetFile = async () => {
-      axios
-        .get("http://127.0.0.1:8000" + path)
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((err) => err);
-    };
-    axiosGetFile();
-  }
+
+  /* handles SnackBar component openning to send error message 
+    to user after submitting new ticket with missing informations */
+  const handleClickOpenSnackBar = () => {
+    setOpenSnackBar(true);
+  };
+  /* handles closing SnackBar */
+  const handleCloseSnackBar = (reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackBar(false);
+  };
   const actionSnackBar = (
     <React.Fragment>
       <IconButton
@@ -218,7 +216,11 @@ export default function Tickets() {
             <Button id={3} color="success" onClick={handleTicketState}>
               Clôturés
             </Button>
-            <Button id={4} style={{backgroundColor : '#616161'}} onClick={handleTicketState}>
+            <Button
+              id={4}
+              style={{ backgroundColor: "#616161" }}
+              onClick={handleTicketState}
+            >
               Tous
             </Button>
           </ButtonGroup>
@@ -261,12 +263,7 @@ export default function Tickets() {
               handleDateChange={handleDateChange}
             />
           ) : (
-            <FormTicket
-              value={value}
-              handleChange={handleChange}
-              row={row}
-              handleFileDownLoad={handleFileDownLoad}
-            />
+            <FormTicket value={value} handleChange={handleChange} row={row} />
           )
         }
         savable={action == "add" ? true : false}
